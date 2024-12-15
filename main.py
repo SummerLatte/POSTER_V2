@@ -1,7 +1,8 @@
 import shutil
 import warnings
 from sklearn import metrics
-from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+# from sklearn.metrics import confusion_matrix, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 warnings.filterwarnings("ignore")
 import torch.utils.data as data
 import os
@@ -27,7 +28,7 @@ now = datetime.datetime.now()
 time_str = now.strftime("[%m-%d]-[%H-%M]-")
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--data', type=str, default=r'/home/Dataset/RAF')
+parser.add_argument('--data', type=str, default=r'data/raf-db/')
 parser.add_argument('--data_type', default='RAF-DB', choices=['RAF-DB', 'AffectNet-7', 'CAER-S'],
                         type=str, help='dataset option')
 parser.add_argument('--checkpoint_path', type=str, default='./checkpoint/' + time_str + 'model.pth')
@@ -43,7 +44,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M')
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float, metavar='W', dest='weight_decay')
 parser.add_argument('-p', '--print-freq', default=30, type=int, metavar='N', help='print frequency')
 parser.add_argument('--resume', default=None, type=str, metavar='PATH', help='path to checkpoint')
-parser.add_argument('-e', '--evaluate', default=None, type=str, help='evaluate model on test set')
+parser.add_argument('-e', '--evaluate', default='checkpoint/raf-db-model_best.pth', type=str, help='None for train, evaluate model on test set')
 parser.add_argument('--beta', type=float, default=0.6)
 parser.add_argument('--gpu', type=str, default='0')
 args = parser.parse_args()
@@ -95,6 +96,7 @@ def main():
     traindir = os.path.join(args.data, 'train')
 
     valdir = os.path.join(args.data, 'valid')
+    # valdir = args.data + 'valid'
 
     if args.evaluate is None:
 
@@ -406,44 +408,45 @@ class RecorderMeter1(object):
         self.y_true = target
 
     def plot_confusion_matrix(self, cm, title='Confusion Matrix', cmap=plt.cm.binary):
-        plt.imshow(cm, interpolation='nearest', cmap=cmap)
-        y_true = self.y_true
-        y_pred = self.y_pred
-
-        plt.title(title)
-        plt.colorbar()
-        xlocations = np.array(range(len(labels)))
-        plt.xticks(xlocations, labels, rotation=90)
-        plt.yticks(xlocations, labels)
-        plt.ylabel('True label')
-        plt.xlabel('Predicted label')
-
-        cm = confusion_matrix(y_true, y_pred)
-        np.set_printoptions(precision=2)
-        cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        plt.figure(figsize=(12, 8), dpi=120)
-
-        ind_array = np.arange(len(labels))
-        x, y = np.meshgrid(ind_array, ind_array)
-        for x_val, y_val in zip(x.flatten(), y.flatten()):
-            c = cm_normalized[y_val][x_val]
-            if c > 0.01:
-                plt.text(x_val, y_val, "%0.2f" % (c,), color='red', fontsize=7, va='center', ha='center')
-        # offset the tick
-        tick_marks = np.arange(len(7))
-        plt.gca().set_xticks(tick_marks, minor=True)
-        plt.gca().set_yticks(tick_marks, minor=True)
-        plt.gca().xaxis.set_ticks_position('none')
-        plt.gca().yaxis.set_ticks_position('none')
-        plt.grid(True, which='minor', linestyle='-')
-        plt.gcf().subplots_adjust(bottom=0.15)
-
-        plot_confusion_matrix(cm_normalized, title='Normalized confusion matrix')
-        # show confusion matrix
-        plt.savefig('./log/confusion_matrix.png', format='png')
-        # fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
-        print('Saved figure')
-        plt.show()
+        pass
+        # plt.imshow(cm, interpolation='nearest', cmap=cmap)
+        # y_true = self.y_true
+        # y_pred = self.y_pred
+        #
+        # plt.title(title)
+        # plt.colorbar()
+        # xlocations = np.array(range(len(labels)))
+        # plt.xticks(xlocations, labels, rotation=90)
+        # plt.yticks(xlocations, labels)
+        # plt.ylabel('True label')
+        # plt.xlabel('Predicted label')
+        #
+        # cm = confusion_matrix(y_true, y_pred)
+        # np.set_printoptions(precision=2)
+        # cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        # plt.figure(figsize=(12, 8), dpi=120)
+        #
+        # ind_array = np.arange(len(labels))
+        # x, y = np.meshgrid(ind_array, ind_array)
+        # for x_val, y_val in zip(x.flatten(), y.flatten()):
+        #     c = cm_normalized[y_val][x_val]
+        #     if c > 0.01:
+        #         plt.text(x_val, y_val, "%0.2f" % (c,), color='red', fontsize=7, va='center', ha='center')
+        # # offset the tick
+        # tick_marks = np.arange(len(7))
+        # plt.gca().set_xticks(tick_marks, minor=True)
+        # plt.gca().set_yticks(tick_marks, minor=True)
+        # plt.gca().xaxis.set_ticks_position('none')
+        # plt.gca().yaxis.set_ticks_position('none')
+        # plt.grid(True, which='minor', linestyle='-')
+        # plt.gcf().subplots_adjust(bottom=0.15)
+        #
+        # plot_confusion_matrix(cm_normalized, title='Normalized confusion matrix')
+        # # show confusion matrix
+        # plt.savefig('./log/confusion_matrix.png', format='png')
+        # # fig.savefig(save_path, dpi=dpi, bbox_inches='tight')
+        # print('Saved figure')
+        # plt.show()
 
     def matrix(self):
         target = self.y_true

@@ -1,0 +1,7 @@
+﻿.idea
+data
+models/__pycache__
+*.pth
+*.tar
+data_preprocessing/__pycache__
+log
