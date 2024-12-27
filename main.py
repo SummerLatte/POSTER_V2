@@ -44,7 +44,8 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M')
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float, metavar='W', dest='weight_decay')
 parser.add_argument('-p', '--print-freq', default=30, type=int, metavar='N', help='print frequency')
 parser.add_argument('--resume', default=None, type=str, metavar='PATH', help='path to checkpoint')
-parser.add_argument('-e', '--evaluate', default='checkpoint/raf-db-model_best.pth', type=str, help='None for train, evaluate model on test set')
+# parser.add_argument('-e', '--evaluate', default='checkpoint/raf-db-model_best.pth', type=str, help='None for train, evaluate model on test set')
+parser.add_argument('-e', '--evaluate', default=None, type=str, help='None for train, evaluate model on test set')
 parser.add_argument('--beta', type=float, default=0.6)
 parser.add_argument('--gpu', type=str, default='0')
 args = parser.parse_args()
@@ -316,6 +317,7 @@ def validate(val_loader, model, criterion, args):
                 progress.display(i)
 
         print(' **** Accuracy {top1.avg:.3f} *** '.format(top1=top1))
+        print('validate time: ' + datetime.datetime.now().strftime("%m-%d %H:%M"))
         with open('./log/' + time_str + 'log.txt', 'a') as f:
             f.write(' * Accuracy {top1.avg:.3f}'.format(top1=top1) + '\n')
     print(D)
