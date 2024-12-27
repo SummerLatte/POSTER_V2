@@ -384,12 +384,13 @@ class pyramid_trans_expr2(nn.Module):
         x_window1, shortcut1 = self.window1(x_ir1)
         x_window2, shortcut2 = self.window2(x_ir2)
         x_window3, shortcut3 = self.window3(x_ir3)
+        # shortcut1 shortcut2 [144, 28, 28, 64] [144, 14, 14, 128] [144, 7, 7, 256]
+        # x_window1 x_window2 [144, 784, 64] [144, 196, 128]  [144, 49, 256]
+        o1, o2, o3 = self.attn1(x_window1, q1), self.attn2(x_window2, q2), self.attn3(x_window3, q3) # o1, o2, o3 [144, 784, 64] [144, 196, 128]  [144, 49, 256]
 
-        o1, o2, o3 = self.attn1(x_window1, q1), self.attn2(x_window2, q2), self.attn3(x_window3, q3)
+        o1, o2, o3 = self.ffn1(o1, shortcut1), self.ffn2(o2, shortcut2), self.ffn3(o3, shortcut3) # o1, o2, o3 -> [144, 28, 28, 64] [144, 14, 14, 128] [144, 7, 7, 256]
 
-        o1, o2, o3 = self.ffn1(o1, shortcut1), self.ffn2(o2, shortcut2), self.ffn3(o3, shortcut3)
-
-        o1, o2, o3 = _to_channel_first(o1), _to_channel_first(o2), _to_channel_first(o3)
+        o1, o2, o3 = _to_channel_first(o1), _to_channel_first(o2), _to_channel_first(o3) # o1, o2, o3 -> [144, 64, 28, 28] [144, 128, 14, 14] [144, 256, 7, 7]
 
         o1, o2, o3 = self.embed_q(o1).flatten(2).transpose(1, 2), self.embed_k(o2).flatten(2).transpose(1, 2), self.embed_v(o3)
 
